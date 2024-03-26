@@ -1,3 +1,5 @@
+import 'dart:collection';
+
 import 'package:english_words/english_words.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -27,10 +29,25 @@ class MyApp extends StatelessWidget {
 
 class MyAppState extends ChangeNotifier {
   var current = WordPair.random();
+  var favorites = HashSet();
 
   void getNext() {
     current = WordPair.random();
     notifyListeners();
+  }
+
+  void addFavorite() {
+    favorites.add(current);
+    notifyListeners();
+  }
+
+  void removeFavorite() {
+    favorites.remove(current);
+    notifyListeners();
+  }
+
+  bool isFavorite() {
+    return favorites.contains(current);
   }
 }
 
@@ -45,17 +62,46 @@ class MyHomePage extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Text('A random AWESOME idea:'),
             BigCard(pair: pair),
-            ElevatedButton(
-              onPressed: () {
-                appState.getNext();
-              },
-              child: Text('Next'),
+            SizedBox(height: 10),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                FavoritesButton(appState: appState),
+                SizedBox(width: 5),
+                ElevatedButton(
+                  onPressed: () {
+                    appState.getNext();
+                  },
+                  child: Text('Next'),
+                ),
+              ],
             ),
           ],
         ),
       ),
+    );
+  }
+}
+
+class FavoritesButton extends StatelessWidget {
+  const FavoritesButton({
+    super.key,
+    required this.appState,
+  });
+
+  final MyAppState appState;
+
+  @override
+  Widget build(BuildContext context) {
+    return ElevatedButton(
+      onPressed: () {
+        appState.isFavorite()
+            ? appState.removeFavorite()
+            : appState.addFavorite();
+      },
+      child:
+          Icon(appState.isFavorite() ? Icons.favorite : Icons.favorite_border),
     );
   }
 }
