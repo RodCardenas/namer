@@ -94,14 +94,15 @@ class FavoritesButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ElevatedButton(
+    return ElevatedButton.icon(
       onPressed: () {
         appState.isFavorite()
             ? appState.removeFavorite()
             : appState.addFavorite();
       },
-      child:
+      icon:
           Icon(appState.isFavorite() ? Icons.favorite : Icons.favorite_border),
+      label: Text('Like'),
     );
   }
 }
